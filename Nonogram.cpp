@@ -82,14 +82,14 @@ void data_to_rc()
         brci[i] = s;
         wrci[i] = nrow - s;
     }
-    for(int i=1;i<=nrow;++i)
+    /*for(int i=1;i<=nrow;++i)
     {
         cout << brri[i] << ' ' << wrri[i] << "\n";
     }
     for(int i=1;i<=ncol;++i)
     {
         cout << brci[i] << ' ' << wrci[i] << "\n";
-    }
+    }*/
 }
 bool check_rule_bounding(char c,int i)
 {
@@ -101,6 +101,7 @@ bool check_rule_bounding(char c,int i)
     {
         if(bri[i] <= brri[i]) return true;
     }
+    return false;
 }
 bool set_coordinate(char c,int i,int j,int len)
 {
@@ -108,70 +109,96 @@ bool set_coordinate(char c,int i,int j,int len)
     {
         if(check_rule_bounding(c,j))
         {
-            for(int k=i;k<=len;++k)
+            for(int k=i;k<=i+len;++k)
             {
-                if(check_rule_bounding("r",k)==false)
+                if(check_rule_bounding('r',k)==false)
                     return false;
             }
         }
         else return false;
         bci[j] += len;
-        for(int k=i;k<=len;++k)
+        for(int k=i;k<=i+len;++k)
         {
             bri[k] += 1;
+            puzzle[k][j] = 1;
         }
     }
     else if(c=='r')
     {
         if(check_rule_bounding(c,i))
         {
-            for(int k=j;k<=len;++k)
+            for(int k=j;k<=j+len;++k)
             {
-                if(check_rule_bounding("c",k)==false)
+                if(check_rule_bounding('c',k)==false)
                     return false;
             }
         }
         else return false;
         bci[i] += len;
-        for(int k=j;k<=len;++k)
+        for(int k=j;k<=j+len;++k)
         {
             bri[k] += 1;
+            puzzle[i][k] = 1;
+        }
+    }
+    return true;
+}
+void remove(char c,int i,int j,int len)
+{
+    // remove bci,bri,puzzle
+    if(c=='c')
+    {
+        bci[j] -= len;
+        for(int k=i;k<=i+len;++k)
+        {
+            bri[k] -= 1;
+            puzzle[k][j] = 0;
+        }
+    }
+    else if(c=='r')
+    {
+        bci[i] -= len;
+        for(int k=j;k<=j+len;++k)
+        {
+            bri[k] -= 1;
+            puzzle[i][k] = 0;
         }
     }
 }
-//void solveNONO()
-//{
-//   for(int i=1;i<=ncol;++i)
-//    {
-//        for(int j=1;ip_col[i][j]!=0;++j)
-//        {
-//
-//        }
-//    }
-//    return;
-//}
-//void backtracking(int x,int y,int len)
-//{
-////    x = 1;
-////    y = i;
-////    len = ip_col[i][j] - x + 1;
-//    if(x+len-1 <= nrow && y<=ncol)
-//    {
-//        if(set_coordinate("c",x,y,len)==true)
-//        {
-//            backtracking(x+1,y,len);
-//        }
-//    }
-//}
+void PrintResult()
+{
+    for(int i=1;i<=nrow;++i)
+    {
+        for(int j=1;j<=ncol;++j)
+        {
+            cout << puzzle[i][j] << ' ';
+        }
+        cout << "\n";
+    }
+}
+void genNonogram(int curCol)
+{
+    
+}
 int main()
 {
     ios_base::sync_with_stdio(0);
     cin.tie(0);
     freopen("NONOGRAM.INP","r",stdin);
-    freopen("NONOGRAM.OUT","w",stdout);
+    //freopen("NONOGRAM.OUT","w",stdout);
+    memset(puzzle,0,sizeof(puzzle));
+    memset(brri,0,sizeof(brri));
+    memset(wrri,0,sizeof(wrri));
+    memset(brci,0,sizeof(brci));
+    memset(wrci,0,sizeof(wrci));
+    memset(bri,0,sizeof(bri));
+    memset(bci,0,sizeof(bci));
+    memset(ip_col,0,sizeof(ip_col));
+    memset(ip_row,0,sizeof(ip_row));
     extract_data();
-    compress_data();
+    //compress_data();
     data_to_rc();
+    genNonogram(1);
     return 0;
 }
 
